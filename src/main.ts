@@ -1,9 +1,14 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import "./style.css";
+import { ApiInterceptor } from "./services/apiInterceptor";
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(router)
+// Inicializar interceptor global para API
+ApiInterceptor.interceptFetch();
 
-app.mount('#app')
+app.use(router);
+
+app.mount("#app");
