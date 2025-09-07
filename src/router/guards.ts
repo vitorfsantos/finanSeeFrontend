@@ -1,13 +1,35 @@
 import type { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
+import type { User } from "@/types";
 
 // Rotas que não precisam de autenticação
 const publicRoutes = ["/login", "/register", "/forgot-password"];
+
+// Rotas que precisam de permissão de administrador
+const adminRoutes = ["/users"];
 
 // Verificar se o usuário está autenticado
 export const isAuthenticated = (): boolean => {
   const token = localStorage.getItem("auth_token");
   const userData = localStorage.getItem("user_data");
   return !!(token && userData);
+};
+
+// Obter dados do usuário atual
+export const getCurrentUser = (): User | null => {
+  const userData = localStorage.getItem("user_data");
+  if (!userData) return null;
+
+  try {
+    return JSON.parse(userData);
+  } catch {
+    return null;
+  }
+};
+
+// Verificar se o usuário é administrador
+export const isAdmin = (): boolean => {
+  const user = getCurrentUser();
+  return user?.user_level_id === 1;
 };
 
 // Guarda de rota para autenticação
@@ -17,13 +39,18 @@ export const authGuard = (
   next: NavigationGuardNext
 ): void => {
   const requiresAuth = !publicRoutes.includes(to.path);
+  const requiresAdmin = adminRoutes.includes(to.path);
   const authenticated = isAuthenticated();
+  const isAdminUser = isAdmin();
 
   if (requiresAuth && !authenticated) {
     // Redirecionar para login se não estiver autenticado
     next("/login");
   } else if (to.path === "/login" && authenticated) {
     // Redirecionar para dashboard se já estiver autenticado
+    next("/dashboard");
+  } else if (requiresAdmin && !isAdminUser) {
+    // Redirecionar para dashboard se não for administrador
     next("/dashboard");
   } else {
     // Continuar para a rota solicitada

@@ -25,6 +25,11 @@ const router = createRouter({
       name: "transactions",
       component: () => import("@/views/TransactionsView.vue"),
     },
+    {
+      path: "/users",
+      name: "users",
+      component: () => import("@/views/UsersView.vue"),
+    },
     // Outras rotas serão adicionadas aqui
   ],
 });

@@ -1,11 +1,28 @@
 import { HttpClient } from "@/services/httpClient";
-import type { User } from "@/types";
+import type { User, PaginatedResponse } from "@/types";
 
 // Interface para atualização de usuário
 export interface UpdateUserRequest {
   name?: string;
   email?: string;
   phone?: string;
+}
+
+// Interface para criação de usuário
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  phone?: string;
+  password: string;
+  user_level_id: number;
+}
+
+// Interface para listagem de usuários
+export interface GetUsersParams {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  user_level_id?: string;
 }
 
 // Serviço de usuário
@@ -55,5 +72,56 @@ export class UserService {
     monthly_income: number;
   }> {
     return HttpClient.get("/api/user/stats");
+  }
+
+  // ===== MÉTODOS DE ADMINISTRAÇÃO DE USUÁRIOS =====
+
+  // Listar usuários (apenas para administradores)
+  static async getUsers(
+    params: GetUsersParams = {}
+  ): Promise<PaginatedResponse<User>> {
+    const queryParams = new URLSearchParams();
+
+    if (params.page) queryParams.append("page", params.page.toString());
+    if (params.per_page)
+      queryParams.append("per_page", params.per_page.toString());
+    if (params.search) queryParams.append("search", params.search);
+    if (params.user_level_id)
+      queryParams.append("user_level_id", params.user_level_id);
+
+    const queryString = queryParams.toString();
+    const url = queryString
+      ? `/api/admin/users?${queryString}`
+      : "/api/admin/users";
+
+    return HttpClient.get<PaginatedResponse<User>>(url);
+  }
+
+  // Criar novo usuário (apenas para administradores)
+  static async createUser(data: CreateUserRequest): Promise<User> {
+    return HttpClient.post<User>("/api/admin/users", data);
+  }
+
+  // Atualizar usuário (apenas para administradores)
+  static async updateUser(
+    userId: string,
+    data: Partial<CreateUserRequest>
+  ): Promise<User> {
+    return HttpClient.put<User>(`/api/admin/users/${userId}`, data);
+  }
+
+  // Desativar usuário (soft delete - apenas para administradores)
+  static async deleteUser(userId: string): Promise<void> {
+    return HttpClient.delete<void>(`/api/admin/users/${userId}`);
+  }
+
+  // Reativar usuário (apenas para administradores)
+  static async restoreUser(userId: string): Promise<User> {
+    return HttpClient.post<User>(`/api/admin/users/${userId}/restore`);
+  }
+
+  // Obter detalhes de um usuário específico (apenas para administradores)
+  static async getUserById(userId: string): Promise<User> {
+    return HttpClient.get<User>(`/api/admin/users/${userId}`);
   }
 }
