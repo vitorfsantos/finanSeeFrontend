@@ -1,6 +1,13 @@
 import { HttpClient } from "@/services/httpClient";
 import type { User, PaginatedResponse } from "@/types";
 
+// Interface para níveis de usuário
+export interface UserLevel {
+  id: number;
+  name: string;
+  description?: string;
+}
+
 // Interface para atualização de usuário
 export interface UpdateUserRequest {
   name?: string;
@@ -76,7 +83,7 @@ export class UserService {
 
   // ===== MÉTODOS DE ADMINISTRAÇÃO DE USUÁRIOS =====
 
-  // Listar usuários (apenas para administradores)
+  // Listar usuários
   static async getUsers(
     params: GetUsersParams = {}
   ): Promise<PaginatedResponse<User>> {
@@ -90,16 +97,14 @@ export class UserService {
       queryParams.append("user_level_id", params.user_level_id);
 
     const queryString = queryParams.toString();
-    const url = queryString
-      ? `/api/admin/users?${queryString}`
-      : "/api/admin/users";
+    const url = queryString ? `/api/users?${queryString}` : "/api/users";
 
     return HttpClient.get<PaginatedResponse<User>>(url);
   }
 
   // Criar novo usuário (apenas para administradores)
   static async createUser(data: CreateUserRequest): Promise<User> {
-    return HttpClient.post<User>("/api/admin/users", data);
+    return HttpClient.post<User>("/api/users", data);
   }
 
   // Atualizar usuário (apenas para administradores)
@@ -107,21 +112,29 @@ export class UserService {
     userId: string,
     data: Partial<CreateUserRequest>
   ): Promise<User> {
-    return HttpClient.put<User>(`/api/admin/users/${userId}`, data);
+    return HttpClient.put<User>(`/api/users/${userId}`, data);
   }
 
   // Desativar usuário (soft delete - apenas para administradores)
   static async deleteUser(userId: string): Promise<void> {
-    return HttpClient.delete<void>(`/api/admin/users/${userId}`);
+    return HttpClient.delete<void>(`/api/users/${userId}`);
   }
 
   // Reativar usuário (apenas para administradores)
   static async restoreUser(userId: string): Promise<User> {
-    return HttpClient.post<User>(`/api/admin/users/${userId}/restore`);
+    return HttpClient.patch<User>(`/api/users/${userId}/restore`);
   }
 
   // Obter detalhes de um usuário específico (apenas para administradores)
   static async getUserById(userId: string): Promise<User> {
     return HttpClient.get<User>(`/api/admin/users/${userId}`);
+  }
+
+  // Obter níveis de usuário disponíveis
+  static async getUserLevels(): Promise<UserLevel[]> {
+    const response = await HttpClient.get<{ data: UserLevel[] }>(
+      "/api/users/levels"
+    );
+    return response.data;
   }
 }

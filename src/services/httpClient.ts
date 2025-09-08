@@ -37,17 +37,27 @@ export class HttpClient {
         throw new Error("Sessão expirada. Faça login novamente.");
       }
 
-      // Tentar extrair mensagem de erro da resposta
-      let errorMessage = `HTTP error! status: ${response.status}`;
+      // Tentar extrair dados de erro da resposta
+      let errorData: any = {
+        message: `HTTP error! status: ${response.status}`,
+      };
 
       try {
-        const errorData = await response.json();
-        errorMessage = errorData.message || errorMessage;
+        errorData = await response.json();
       } catch {
         // Se não conseguir ler JSON, usar mensagem padrão
       }
 
-      throw new Error(errorMessage);
+      // Criar erro personalizado que preserva os dados da resposta
+      const error = new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      ) as any;
+      error.response = {
+        status: response.status,
+        data: errorData,
+      };
+
+      throw error;
     }
 
     // Se a resposta for vazia (como em DELETE), retornar void
