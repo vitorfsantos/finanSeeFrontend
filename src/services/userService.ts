@@ -22,6 +22,7 @@ export interface CreateUserRequest {
   phone?: string;
   password: string;
   user_level_id: number;
+  company_id?: string;
 }
 
 // Interface para listagem de usuários
