@@ -54,14 +54,12 @@ import { useRouter } from "vue-router";
 import type { User } from "@/types";
 import { UserService, type UserLevel } from "@/services/userService";
 import MainLayout from "@/layouts/MainLayout.vue";
-import {
-  UsersHeader,
-  UsersFilters,
-  UsersTable,
-  UsersPagination,
-  UserModal,
-  UserDeleteModal,
-} from "@/components/Users";
+import UsersHeader from "@/components/Users/UsersHeader.vue";
+import UsersFilters from "@/components/Users/UsersFilters.vue";
+import UsersTable from "@/components/Users/UsersTable.vue";
+import UsersPagination from "@/components/Users/UsersPagination.vue";
+import UserModal from "@/components/Users/UserModal.vue";
+import UserDeleteModal from "@/components/Users/UserDeleteModal.vue";
 
 // Reactive state
 const router = useRouter();
@@ -82,6 +80,7 @@ const validationErrors = ref<Record<string, string[]>>({});
 const filters = ref({
   search: "",
   user_level_id: "",
+  company_id: "",
 });
 
 // Methods
@@ -104,6 +103,9 @@ const loadUsers = async (page = 1) => {
       ...(filters.value.search && { search: filters.value.search }),
       ...(filters.value.user_level_id && {
         user_level_id: filters.value.user_level_id,
+      }),
+      ...(filters.value.company_id && {
+        company_id: filters.value.company_id,
       }),
     };
 
@@ -255,6 +257,7 @@ const clearFilters = () => {
   filters.value = {
     search: "",
     user_level_id: "",
+    company_id: "",
   };
   loadUsers();
 };
@@ -278,6 +281,13 @@ onMounted(() => {
 // Watch for filter changes
 watch(
   () => filters.value.user_level_id,
+  () => {
+    loadUsers();
+  }
+);
+
+watch(
+  () => filters.value.company_id,
   () => {
     loadUsers();
   }

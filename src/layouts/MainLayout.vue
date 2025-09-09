@@ -285,8 +285,8 @@ const navigationItems = computed(() => {
     },
   ];
 
-  // Adicionar menu de Usuários apenas para administradores (user_level_id = 1)
-  if (props.user?.user_level_id === 1) {
+  // Adicionar menu de Usuários para administradores (user_level_id = 1) e gerentes (user_level_id = 2)
+  if (props.user?.user_level_id === 1 || props.user?.user_level_id === 2) {
     items.push({
       name: "Usuários",
       href: "/users",

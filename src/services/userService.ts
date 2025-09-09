@@ -31,6 +31,7 @@ export interface GetUsersParams {
   per_page?: number;
   search?: string;
   user_level_id?: string;
+  company_id?: string;
 }
 
 // Serviço de usuário
@@ -96,6 +97,7 @@ export class UserService {
     if (params.search) queryParams.append("search", params.search);
     if (params.user_level_id)
       queryParams.append("user_level_id", params.user_level_id);
+    if (params.company_id) queryParams.append("company_id", params.company_id);
 
     const queryString = queryParams.toString();
     const url = queryString ? `/api/users?${queryString}` : "/api/users";

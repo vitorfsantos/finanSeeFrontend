@@ -22,6 +22,11 @@
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
+              Empresas
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               Status
             </th>
             <th
@@ -38,12 +43,12 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-if="loading" class="animate-pulse">
-            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
               Carregando usuários...
             </td>
           </tr>
           <tr v-else-if="users.length === 0">
-            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
               Nenhum usuário encontrado
             </td>
           </tr>
@@ -90,6 +95,11 @@
               >
                 {{ getUserLevelName(user.user_level_id) }}
               </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">
+                <CompaniesDisplay :companies="user.companies || []" />
+              </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
@@ -182,6 +192,7 @@
 import type { User } from "@/types";
 import type { UserLevel } from "@/services/userService";
 import { formatDateTime } from "@/utils";
+import CompaniesDisplay from "./CompaniesDisplay.vue";
 
 interface Props {
   users: User[];
