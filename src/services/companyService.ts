@@ -1,4 +1,5 @@
 import { HttpClient } from "@/services/httpClient";
+import type { PaginatedResponse } from "@/types";
 
 // Interface para endereço da empresa
 export interface CompanyAddress {
@@ -34,12 +35,38 @@ export interface CreateCompanyRequest {
   address?: CompanyAddress;
 }
 
+// Interface para listagem de empresas
+export interface GetCompaniesParams {
+  page?: number;
+  per_page?: number;
+  search?: string;
+}
+
 // Serviço de empresa
 export class CompanyService {
-  // Listar todas as empresas
-  static async getCompanies(): Promise<Company[]> {
+  // Listar empresas com paginação e filtros
+  static async getCompanies(
+    params: GetCompaniesParams = {}
+  ): Promise<PaginatedResponse<Company>> {
+    const queryParams = new URLSearchParams();
+
+    if (params.page) queryParams.append("page", params.page.toString());
+    if (params.per_page)
+      queryParams.append("per_page", params.per_page.toString());
+    if (params.search) queryParams.append("search", params.search);
+
+    const queryString = queryParams.toString();
+    const url = queryString
+      ? `/api/companies?${queryString}`
+      : "/api/companies";
+
+    return HttpClient.get<PaginatedResponse<Company>>(url);
+  }
+
+  // Listar todas as empresas (sem paginação - para selects)
+  static async getAllCompanies(): Promise<Company[]> {
     const response = await HttpClient.get<{ data: Company[] }>(
-      "/api/companies"
+      "/api/companies/all"
     );
     return response.data;
   }
@@ -62,8 +89,13 @@ export class CompanyService {
     return HttpClient.put<Company>(`/api/companies/${companyId}`, data);
   }
 
-  // Deletar empresa
+  // Deletar empresa (soft delete)
   static async deleteCompany(companyId: string): Promise<void> {
     return HttpClient.delete<void>(`/api/companies/${companyId}`);
+  }
+
+  // Reativar empresa
+  static async restoreCompany(companyId: string): Promise<Company> {
+    return HttpClient.patch<Company>(`/api/companies/${companyId}/restore`);
   }
 }

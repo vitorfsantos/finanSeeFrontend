@@ -251,6 +251,7 @@ import {
   ChartBarIcon,
   CogIcon,
   UsersIcon,
+  BuildingOfficeIcon,
 } from "@/components/icons";
 
 // Props
@@ -291,6 +292,12 @@ const navigationItems = computed(() => {
       name: "Usuários",
       href: "/users",
       icon: UsersIcon,
+    });
+
+    items.push({
+      name: "Empresas",
+      href: "/companies",
+      icon: BuildingOfficeIcon,
     });
   }
 

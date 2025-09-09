@@ -5,7 +5,7 @@ import type { User } from "@/types";
 const publicRoutes = ["/login", "/register", "/forgot-password"];
 
 // Rotas que precisam de permissão de administrador ou gerente
-const adminRoutes = ["/users"];
+const adminRoutes = ["/users", "/companies"];
 
 // Verificar se o usuário está autenticado
 export const isAuthenticated = (): boolean => {
@@ -38,6 +38,12 @@ export const canManageUsers = (): boolean => {
   return user?.user_level_id === 1 || user?.user_level_id === 2;
 };
 
+// Verificar se o usuário pode gerenciar empresas (níveis 1 e 2)
+export const canManageCompanies = (): boolean => {
+  const user = getCurrentUser();
+  return user?.user_level_id === 1 || user?.user_level_id === 2;
+};
+
 // Guarda de rota para autenticação
 export const authGuard = (
   to: RouteLocationNormalized,
@@ -49,6 +55,7 @@ export const authGuard = (
   const authenticated = isAuthenticated();
   const isAdminUser = isAdmin();
   const canManageUsersAccess = canManageUsers();
+  const canManageCompaniesAccess = canManageCompanies();
 
   if (requiresAuth && !authenticated) {
     // Redirecionar para login se não estiver autenticado
@@ -56,8 +63,12 @@ export const authGuard = (
   } else if (to.path === "/login" && authenticated) {
     // Redirecionar para dashboard se já estiver autenticado
     next("/dashboard");
-  } else if (requiresAdmin && !canManageUsersAccess) {
-    // Redirecionar para dashboard se não tiver permissão para gerenciar usuários
+  } else if (
+    requiresAdmin &&
+    !canManageUsersAccess &&
+    !canManageCompaniesAccess
+  ) {
+    // Redirecionar para dashboard se não tiver permissão para gerenciar usuários ou empresas
     next("/dashboard");
   } else {
     // Continuar para a rota solicitada
