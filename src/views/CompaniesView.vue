@@ -89,7 +89,7 @@ const loadCompanies = async (page = 1) => {
   try {
     const params = {
       page,
-      per_page: 15,
+      per_page: 10,
       ...(filters.value.search && { search: filters.value.search }),
     };
 

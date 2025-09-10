@@ -99,7 +99,7 @@ const loadUsers = async (page = 1) => {
   try {
     const params = {
       page,
-      per_page: 15,
+      per_page: 10,
       ...(filters.value.search && { search: filters.value.search }),
       ...(filters.value.user_level_id && {
         user_level_id: filters.value.user_level_id,
@@ -111,13 +111,16 @@ const loadUsers = async (page = 1) => {
 
     const response = await UserService.getUsers(params);
     users.value = response.data;
+
+    // A API retorna os dados de paginação dentro de 'meta'
+    const meta = (response as any).meta || response;
     pagination.value = {
-      current_page: response.current_page,
-      last_page: response.last_page,
-      per_page: response.per_page,
-      total: response.total,
-      from: response.from,
-      to: response.to,
+      current_page: meta.current_page,
+      last_page: meta.last_page,
+      per_page: meta.per_page,
+      total: meta.total,
+      from: meta.from,
+      to: meta.to,
     };
   } catch (error) {
     console.error("Erro ao carregar usuários:", error);

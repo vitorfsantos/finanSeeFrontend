@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="pagination && pagination.total > pagination.per_page"
+    v-if="pagination && pagination.last_page > 1"
     class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6"
   >
     <div class="flex items-center justify-between">
@@ -20,9 +20,7 @@
           Próximo
         </button>
       </div>
-      <div
-        class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
-      >
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
         <div>
           <p class="text-sm text-gray-700">
             Mostrando
@@ -44,11 +42,7 @@
               :disabled="pagination.current_page <= 1"
               class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg
-                class="h-5 w-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
@@ -74,11 +68,7 @@
               :disabled="pagination.current_page >= pagination.last_page"
               class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg
-                class="h-5 w-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -94,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from "vue";
 
 interface Pagination {
   current_page: number;
@@ -110,7 +100,7 @@ interface Props {
 }
 
 interface Emits {
-  'change-page': [page: number];
+  "change-page": [page: number];
 }
 
 const props = defineProps<Props>();
