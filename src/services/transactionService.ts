@@ -3,6 +3,7 @@ import type {
   Transaction,
   TransactionFilters,
   PaginatedResponse,
+  MonthlyReportResponse,
 } from "@/types";
 
 export class TransactionService {
@@ -74,5 +75,14 @@ export class TransactionService {
    */
   static async deleteTransaction(id: string): Promise<void> {
     await HttpClient.delete(`/api/transactions/${id}`);
+  }
+
+  /**
+   * Busca relatório mensal de transações
+   */
+  static async getMonthlyReport(): Promise<MonthlyReportResponse> {
+    return HttpClient.get<MonthlyReportResponse>(
+      "/api/transactions/reports/monthly"
+    );
   }
 }
