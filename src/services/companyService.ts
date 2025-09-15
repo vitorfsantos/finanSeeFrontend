@@ -65,10 +65,19 @@ export class CompanyService {
 
   // Listar todas as empresas (sem paginação - para selects)
   static async getAllCompanies(): Promise<Company[]> {
-    const response = await HttpClient.get<{ data: Company[] }>(
-      "/api/companies/all"
-    );
-    return response.data;
+    try {
+      const response = await HttpClient.get<{ data: Company[] }>(
+        "/api/companies/all"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar todas as empresas:", error);
+      // Se o endpoint /all não existir, tentar o endpoint normal
+      const response = await HttpClient.get<PaginatedResponse<Company>>(
+        "/api/companies"
+      );
+      return response.data;
+    }
   }
 
   // Criar nova empresa

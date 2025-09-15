@@ -21,6 +21,27 @@ export interface ApiError {
   errors?: Record<string, string[]>;
 }
 
+export interface GenerateFakeDataRequest {
+  type: "user" | "companyAdmin";
+}
+
+export interface GenerateFakeDataResponse {
+  success: boolean;
+  message: string;
+  data: {
+    email: string;
+    password: string;
+    user_type: "user" | "companyAdmin";
+    generated_data: {
+      company_id: string;
+      company_name: string;
+      admin_user_id: string;
+      company_users_count: number;
+      transactions_count: number;
+    };
+  };
+}
+
 // Classe de serviço de autenticação
 export class AuthService {
   // Método de login
@@ -57,5 +78,30 @@ export class AuthService {
   // Método para obter perfil do usuário
   static async getUserProfile(): Promise<LoginResponse["user"]> {
     return HttpClient.get<LoginResponse["user"]>("/api/user/profile");
+  }
+
+  // Método para gerar dados fake
+  static async generateFakeData(
+    request: GenerateFakeDataRequest
+  ): Promise<GenerateFakeDataResponse> {
+    const response = await fetch(
+      `${API_CONFIG.BASE_URL}/api/generate-fake-data`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({
+        message: `HTTP error! status: ${response.status}`,
+      }));
+      throw new Error(errorData.message);
+    }
+
+    return response.json();
   }
 }

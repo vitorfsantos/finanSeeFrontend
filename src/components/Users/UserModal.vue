@@ -121,6 +121,7 @@
                       id="phone"
                       v-model="form.phone"
                       type="tel"
+                      maxlength="15"
                       @input="formatPhone"
                       :class="[
                         'w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500',
@@ -288,6 +289,18 @@
                                   {{ comp.name }}
                                 </option>
                               </select>
+                              <!-- Debug info -->
+                              <div
+                                v-if="companies.length === 0"
+                                class="mt-1 text-xs text-red-500"
+                              >
+                                Nenhuma empresa carregada ({{
+                                  companies.length
+                                }})
+                              </div>
+                              <div v-else class="mt-1 text-xs text-green-500">
+                                {{ companies.length }} empresa(s) carregada(s)
+                              </div>
                               <div
                                 v-if="
                                   getFieldErrors(
@@ -514,7 +527,51 @@ onMounted(async () => {
 // Função para carregar empresas
 const loadCompanies = async () => {
   try {
-    companies.value = await CompanyService.getCompanies();
+    console.log("Carregando empresas...");
+
+    // Tentar primeiro o método getAllCompanies que é específico para selects
+    try {
+      const companiesList = await CompanyService.getAllCompanies();
+      console.log("Empresas carregadas via getAllCompanies:", companiesList);
+
+      // Verificar se a lista está vazia ou se há algum problema
+      if (Array.isArray(companiesList) && companiesList.length > 0) {
+        companies.value = companiesList;
+        console.log("Empresas carregadas com sucesso:", companies.value.length);
+        return;
+      } else {
+        console.log("Lista de empresas vazia ou inválida:", companiesList);
+      }
+    } catch (allCompaniesError) {
+      console.log(
+        "getAllCompanies falhou, tentando getCompanies:",
+        allCompaniesError
+      );
+    }
+
+    // Se getAllCompanies falhar ou retornar vazio, tentar getCompanies com paginação
+    const response = await CompanyService.getCompanies();
+    console.log("Resposta da API de empresas:", response);
+
+    // Verificar se a resposta tem a estrutura esperada
+    if (response && response.data && Array.isArray(response.data)) {
+      companies.value = response.data;
+      console.log(
+        "Empresas carregadas via getCompanies:",
+        companies.value.length
+      );
+    } else if (Array.isArray(response)) {
+      companies.value = response;
+      console.log(
+        "Empresas carregadas como array direto:",
+        companies.value.length
+      );
+    } else {
+      console.error("Estrutura de resposta inesperada:", response);
+      companies.value = [];
+    }
+
+    console.log("Empresas finais carregadas:", companies.value);
   } catch (error) {
     console.error("Erro ao carregar empresas:", error);
     companies.value = [];
