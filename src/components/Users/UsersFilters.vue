@@ -100,7 +100,8 @@ const companies = ref<Company[]>([]);
 // Carregar empresas
 onMounted(async () => {
   try {
-    companies.value = await CompanyService.getCompanies();
+    const response = await CompanyService.getCompanies();
+    companies.value = response.data;
   } catch (error) {
     console.error("Erro ao carregar empresas:", error);
     companies.value = [];

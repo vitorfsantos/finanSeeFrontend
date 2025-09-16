@@ -184,7 +184,7 @@
                         <div class="relative">
                           <input
                             id="zipcode"
-                            v-model="form.address.zipcode"
+                            v-model="form.address!.zipcode"
                             type="text"
                             maxlength="10"
                             class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -246,7 +246,7 @@
                         </label>
                         <input
                           id="country"
-                          v-model="form.address.country"
+                          v-model="form.address!.country"
                           type="text"
                           maxlength="100"
                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -264,7 +264,7 @@
                         </label>
                         <input
                           id="street"
-                          v-model="form.address.street"
+                          v-model="form.address!.street"
                           type="text"
                           maxlength="255"
                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -282,7 +282,7 @@
                         </label>
                         <input
                           id="number"
-                          v-model="form.address.number"
+                          v-model="form.address!.number"
                           type="text"
                           maxlength="20"
                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -299,7 +299,7 @@
                         </label>
                         <input
                           id="complement"
-                          v-model="form.address.complement"
+                          v-model="form.address!.complement"
                           type="text"
                           maxlength="100"
                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -317,7 +317,7 @@
                         </label>
                         <input
                           id="neighborhood"
-                          v-model="form.address.neighborhood"
+                          v-model="form.address!.neighborhood"
                           type="text"
                           maxlength="100"
                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -335,7 +335,7 @@
                         </label>
                         <input
                           id="city"
-                          v-model="form.address.city"
+                          v-model="form.address!.city"
                           type="text"
                           maxlength="100"
                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -353,7 +353,7 @@
                         </label>
                         <input
                           id="state"
-                          v-model="form.address.state"
+                          v-model="form.address!.state"
                           type="text"
                           maxlength="2"
                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -542,7 +542,7 @@ const formatZipcodeInput = (event: Event) => {
 
   if (value.length <= 8) {
     value = value.replace(/^(\d{5})(\d{3})$/, "$1-$2");
-    form.address.zipcode = value;
+    form.address!.zipcode = value;
 
     // Buscar CEP quando tiver 8 dígitos
     if (value.replace(/\D/g, "").length === 8) {
@@ -561,11 +561,11 @@ const searchZipcode = async (zipcode: string) => {
     const data = await response.json();
 
     if (!data.erro) {
-      form.address.street = data.logradouro || "";
-      form.address.neighborhood = data.bairro || "";
-      form.address.city = data.localidade || "";
-      form.address.state = data.uf || "";
-      form.address.country = "Brasil";
+      form.address!.street = data.logradouro || "";
+      form.address!.neighborhood = data.bairro || "";
+      form.address!.city = data.localidade || "";
+      form.address!.state = data.uf || "";
+      form.address!.country = "Brasil";
     }
   } catch (error) {
     console.error("Erro ao buscar CEP:", error);

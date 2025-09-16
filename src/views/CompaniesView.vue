@@ -233,7 +233,7 @@ onMounted(() => {
     user.value = JSON.parse(userData);
 
     // Verificar se o usuário tem permissão para acessar esta página
-    if (user.value.user_level_id > 2) {
+    if (user.value && user.value.user_level_id > 2) {
       router.push("/dashboard");
       return;
     }

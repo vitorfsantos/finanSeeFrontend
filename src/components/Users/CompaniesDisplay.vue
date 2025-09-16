@@ -1,14 +1,19 @@
 <template>
   <div class="relative inline-block">
-    <div v-if="companies.length === 0" class="text-gray-400 text-sm">
+    <div
+      v-if="!companies || companies.length === 0"
+      class="text-gray-400 text-sm"
+    >
       Nenhuma empresa
     </div>
     <div v-else class="relative group cursor-pointer">
       <span class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
         {{
-          companies.length === 1
+          companies && companies.length === 1
             ? companies[0].name
-            : `${companies[0].name} +${companies.length - 1}`
+            : companies && companies.length > 1
+            ? `${companies[0].name} +${companies.length - 1}`
+            : ""
         }}
       </span>
 
@@ -22,7 +27,7 @@
         >
           <div class="font-medium mb-2 text-center">
             {{
-              companies.length === 1
+              companies && companies.length === 1
                 ? "Empresa vinculada"
                 : "Empresas vinculadas"
             }}

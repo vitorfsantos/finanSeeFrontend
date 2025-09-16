@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="pagination?.last_page > 1"
+    v-if="pagination?.last_page && pagination.last_page > 1"
     class="px-6 py-4 border-t border-gray-200 flex items-center justify-between"
   >
     <div class="flex items-center">
