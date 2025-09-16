@@ -1,6 +1,7 @@
 // Interceptor global para adicionar Bearer token em todas as requisições
 export class ApiInterceptor {
-  private static baseURL = "http://localhost:8000";
+  // private static baseURL = "http://localhost:8000";
+  private static baseURL = "https://finanseebackend-master-zeretp.laravel.cloud";
 
   // Interceptar todas as requisições fetch
   static interceptFetch(): void {

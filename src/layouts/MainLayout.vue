@@ -148,34 +148,6 @@
 
           <!-- Right side actions -->
           <div class="flex items-center space-x-4">
-            <!-- Notifications -->
-            <button
-              class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors relative"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 17h5l-5 5v-5z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M9 11h.01M9 8h.01M9 5h.01M9 2h.01"
-                />
-              </svg>
-              <!-- Notification badge -->
-              <span
-                class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
-              ></span>
-            </button>
 
             <!-- Profile dropdown -->
             <div class="relative">
@@ -197,18 +169,6 @@
                 v-if="isProfileDropdownOpen"
                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-200"
               >
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  Seu perfil
-                </a>
-                <a
-                  href="#"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  Configurações
-                </a>
                 <div class="border-t border-gray-100 my-1"></div>
                 <button
                   @click="handleLogout"

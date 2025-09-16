@@ -1,6 +1,7 @@
 // Configuração da API
 export const API_CONFIG = {
-  BASE_URL: "http://localhost:8000",
+  // BASE_URL: "http://localhost:8000",
+  BASE_URL: "https://finanseebackend-master-zeretp.laravel.cloud",
   ENDPOINTS: {
     AUTH: {
       BASE: "/api/auth",
