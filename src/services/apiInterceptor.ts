@@ -1,7 +1,10 @@
+import { HttpClient } from "./httpClient";
+
 // Interceptor global para adicionar Bearer token em todas as requisições
 export class ApiInterceptor {
   // private static baseURL = "http://localhost:8000";
-  private static baseURL = "https://finanseebackend-master-zeretp.laravel.cloud";
+  private static baseURL =
+    "https://finanseebackend-master-zeretp.laravel.cloud";
 
   // Interceptar todas as requisições fetch
   static interceptFetch(): void {
@@ -76,19 +79,11 @@ export class ApiInterceptor {
   static async refreshTokenIfNeeded(): Promise<boolean> {
     if (this.isTokenExpired()) {
       try {
-        const response = await fetch(`${this.baseURL}/api/auth/refresh`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem("auth_token", data.token);
-          return true;
-        }
+        const data = await HttpClient.post<{ token: string }>(
+          "/api/auth/refresh"
+        );
+        localStorage.setItem("auth_token", data.token);
+        return true;
       } catch (error) {
         console.error("Erro ao renovar token:", error);
       }

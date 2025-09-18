@@ -46,23 +46,10 @@ export interface GenerateFakeDataResponse {
 export class AuthService {
   // Método de login
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
-    // Para login, não usar interceptor (não tem token ainda)
-    const response = await fetch(`${API_CONFIG.BASE_URL}/api/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
+    // Para login, usar HttpClient com skipAuth para não adicionar token
+    return HttpClient.post<LoginResponse>("/api/auth/login", credentials, {
+      skipAuth: true,
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        message: `HTTP error! status: ${response.status}`,
-      }));
-      throw new Error(errorData.message);
-    }
-
-    return response.json();
   }
 
   // Método de logout
@@ -84,24 +71,12 @@ export class AuthService {
   static async generateFakeData(
     request: GenerateFakeDataRequest
   ): Promise<GenerateFakeDataResponse> {
-    const response = await fetch(
-      `${API_CONFIG.BASE_URL}/api/generate-fake-data`,
+    return HttpClient.post<GenerateFakeDataResponse>(
+      "/api/generate-fake-data",
+      request,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
+        skipAuth: true,
       }
     );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        message: `HTTP error! status: ${response.status}`,
-      }));
-      throw new Error(errorData.message);
-    }
-
-    return response.json();
   }
 }

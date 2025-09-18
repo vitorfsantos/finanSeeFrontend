@@ -148,7 +148,6 @@
 
           <!-- Right side actions -->
           <div class="flex items-center space-x-4">
-
             <!-- Profile dropdown -->
             <div class="relative">
               <button
@@ -196,6 +195,9 @@
       @click="closeSidebar"
       class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
     ></div>
+
+    <!-- Global Loading Component -->
+    <GlobalLoading />
   </div>
 </template>
 
@@ -204,6 +206,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { AuthService } from "@/services/authService";
 import type { User } from "@/types";
+import GlobalLoading from "@/components/GlobalLoading.vue";
 import {
   HomeIcon,
   CurrencyDollarIcon,

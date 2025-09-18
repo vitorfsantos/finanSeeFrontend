@@ -1,4 +1,5 @@
 import { API_CONFIG } from "@/config/api";
+import { globalLoading } from "@/composables/useLoading";
 
 // Tipos para o cliente HTTP
 export interface RequestOptions extends RequestInit {
@@ -18,13 +19,55 @@ export class HttpClient {
     const token = localStorage.getItem("auth_token");
 
     if (!token) {
-      return {};
+      return {
+        "Content-Type": "application/json",
+      };
     }
 
     return {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     };
+  }
+
+  private static getHeaders(skipAuth: boolean = false): HeadersInit {
+    if (skipAuth) {
+      return {
+        "Content-Type": "application/json",
+      };
+    }
+    return this.getAuthHeaders();
+  }
+
+  private static async makeRequestWithTimeout<T>(
+    url: string,
+    options: RequestInit,
+    timeoutMs: number = 2000
+  ): Promise<T> {
+    // Incrementar contador de requisições ativas
+    globalLoading.incrementActiveRequests();
+
+    // Timeout para mostrar loading de hibernação (sem cancelar a requisição)
+    const hibernationTimeoutId = setTimeout(() => {
+      globalLoading.showBackendHibernating();
+    }, timeoutMs);
+
+    try {
+      const response = await fetch(url, options);
+
+      // Limpar timeout de hibernação
+      clearTimeout(hibernationTimeoutId);
+
+      return await this.handleResponse<T>(response);
+    } catch (error) {
+      // Limpar timeout de hibernação
+      clearTimeout(hibernationTimeoutId);
+
+      throw error;
+    } finally {
+      // Decrementar contador de requisições ativas
+      globalLoading.decrementActiveRequests();
+    }
   }
 
   private static async handleResponse<T>(response: Response): Promise<T> {
@@ -84,16 +127,14 @@ export class HttpClient {
       ? `${API_CONFIG.BASE_URL}${endpoint}`
       : `${API_CONFIG.BASE_URL}${endpoint}`;
 
-    const response = await fetch(url, {
+    return this.makeRequestWithTimeout<T>(url, {
       method: "GET",
       headers: {
-        ...this.getAuthHeaders(),
+        ...this.getHeaders(options.skipAuth),
         ...options.headers,
       },
       ...options,
     });
-
-    return this.handleResponse<T>(response);
   }
 
   // Método POST
@@ -106,17 +147,15 @@ export class HttpClient {
       ? `${API_CONFIG.BASE_URL}${endpoint}`
       : `${API_CONFIG.BASE_URL}${endpoint}`;
 
-    const response = await fetch(url, {
+    return this.makeRequestWithTimeout<T>(url, {
       method: "POST",
       headers: {
-        ...this.getAuthHeaders(),
+        ...this.getHeaders(options.skipAuth),
         ...options.headers,
       },
       body: data ? JSON.stringify(data) : undefined,
       ...options,
     });
-
-    return this.handleResponse<T>(response);
   }
 
   // Método PUT
@@ -129,17 +168,15 @@ export class HttpClient {
       ? `${API_CONFIG.BASE_URL}${endpoint}`
       : `${API_CONFIG.BASE_URL}${endpoint}`;
 
-    const response = await fetch(url, {
+    return this.makeRequestWithTimeout<T>(url, {
       method: "PUT",
       headers: {
-        ...this.getAuthHeaders(),
+        ...this.getHeaders(options.skipAuth),
         ...options.headers,
       },
       body: data ? JSON.stringify(data) : undefined,
       ...options,
     });
-
-    return this.handleResponse<T>(response);
   }
 
   // Método PATCH
@@ -152,17 +189,15 @@ export class HttpClient {
       ? `${API_CONFIG.BASE_URL}${endpoint}`
       : `${API_CONFIG.BASE_URL}${endpoint}`;
 
-    const response = await fetch(url, {
+    return this.makeRequestWithTimeout<T>(url, {
       method: "PATCH",
       headers: {
-        ...this.getAuthHeaders(),
+        ...this.getHeaders(options.skipAuth),
         ...options.headers,
       },
       body: data ? JSON.stringify(data) : undefined,
       ...options,
     });
-
-    return this.handleResponse<T>(response);
   }
 
   // Método DELETE
@@ -174,16 +209,14 @@ export class HttpClient {
       ? `${API_CONFIG.BASE_URL}${endpoint}`
       : `${API_CONFIG.BASE_URL}${endpoint}`;
 
-    const response = await fetch(url, {
+    return this.makeRequestWithTimeout<T>(url, {
       method: "DELETE",
       headers: {
-        ...this.getAuthHeaders(),
+        ...this.getHeaders(options.skipAuth),
         ...options.headers,
       },
       ...options,
     });
-
-    return this.handleResponse<T>(response);
   }
 
   // Método para requisições customizadas
@@ -191,14 +224,12 @@ export class HttpClient {
     url: string,
     options: RequestOptions = {}
   ): Promise<T> {
-    const response = await fetch(url, {
+    return this.makeRequestWithTimeout<T>(url, {
       headers: {
-        ...this.getAuthHeaders(),
+        ...this.getHeaders(options.skipAuth),
         ...options.headers,
       },
       ...options,
     });
-
-    return this.handleResponse<T>(response);
   }
 }
